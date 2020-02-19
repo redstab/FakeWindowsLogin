@@ -44,7 +44,6 @@
 			this.LogonImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
 			this.LogonImage.TabIndex = 0;
 			this.LogonImage.TabStop = false;
-			this.LogonImage.Click += new System.EventHandler(this.LogonImage_Click);
 			// 
 			// Login
 			// 
@@ -59,6 +58,7 @@
 			this.Text = "Windows-login";
 			this.TopMost = true;
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+			this.Load += new System.EventHandler(this.Login_Load);
 			((System.ComponentModel.ISupportInitialize)(this.LogonImage)).EndInit();
 			this.ResumeLayout(false);
 

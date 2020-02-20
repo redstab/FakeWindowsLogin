@@ -56,7 +56,6 @@
 			this.Name = "Login";
 			this.ShowInTaskbar = false;
 			this.Text = "Windows-login";
-			this.TopMost = true;
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			this.Load += new System.EventHandler(this.Login_Load);
 			((System.ComponentModel.ISupportInitialize)(this.LogonImage)).EndInit();

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,6 +18,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -96,7 +98,7 @@ namespace WindowsLogon
 		{
 			return GetRegValue(RegistryHive.LocalMachine, $@"SOFTWARE\Microsoft\Windows\CurrentVersion\SystemProtectedUserData\{SID}\AnyoneRead\LockScreen", "") == null;
 		}
-		
+
 		public System.Windows.Media.Brush GetAccent()
 		{
 			int hexcolor = (int)GetRegValue(RegistryHive.CurrentUser, @"Software\Microsoft\Windows\DWM", "ColorizationColor");
@@ -106,7 +108,7 @@ namespace WindowsLogon
 		}
 
 		private string SID { get { return WindowsIdentity.GetCurrent().User.Value; } }
-		
+
 		public LockscreenType WallpaperType { get; }
 
 		public Bitmap GetWallpaper()
@@ -128,7 +130,7 @@ namespace WindowsLogon
 			}
 			else if (WallpaperType == LockscreenType.Slideshow)
 			{
-				return new Bitmap(Directory.GetFiles(GetSlideshowPath()).First());
+				return new Bitmap(Directory.GetFiles(GetSlideshowPath()).Last());
 			}
 			else
 			{
@@ -160,14 +162,62 @@ namespace WindowsLogon
 	{
 		public LockScreenImage lsi = new LockScreenImage();
 
+		private Storyboard myStoryboard;
+
 		public MainWindow()
 		{
 			InitializeComponent();
+
+			DoubleAnimation DateOpacity = new DoubleAnimation();
+			DateOpacity.From = 1.0;
+			DateOpacity.To = 0.0;
+			DateOpacity.Duration = new Duration(TimeSpan.FromMilliseconds(100));
+
+			DoubleAnimation DimmerOpacity = new DoubleAnimation();
+			DimmerOpacity.From = 0.23;
+			DimmerOpacity.To = 0.4;
+			DimmerOpacity.Duration = new Duration(TimeSpan.FromMilliseconds(300));
+
+			DoubleAnimation ClockOpacity = new DoubleAnimation();
+			ClockOpacity.From = 1.0;
+			ClockOpacity.To = 0.0;
+			ClockOpacity.Duration = new Duration(TimeSpan.FromMilliseconds(100));
+
+			ThicknessAnimation ClockMargin = new ThicknessAnimation();
+			ClockMargin.From = new Thickness(30, 0, 0, 173);
+			ClockMargin.To = new Thickness(30, 0, 0, 600);
+			ClockMargin.Duration = new Duration(TimeSpan.FromMilliseconds(100));
+
+			ThicknessAnimation DateMargin = new ThicknessAnimation();
+			DateMargin.From = new Thickness(30, 0, 0, 96);
+			DateMargin.To = new Thickness(30, 0, 0, 600);
+			DateMargin.Duration = new Duration(TimeSpan.FromMilliseconds(100));
+
+			myStoryboard = new Storyboard();
+			myStoryboard.Children.Add(ClockOpacity);
+			myStoryboard.Children.Add(ClockMargin);
+			myStoryboard.Children.Add(DateOpacity);
+			myStoryboard.Children.Add(DateMargin);
+			myStoryboard.Children.Add(DimmerOpacity);
+
+			Storyboard.SetTargetName(ClockOpacity, ClockLabel.Name);
+			Storyboard.SetTargetName(ClockMargin, ClockLabel.Name);
+			Storyboard.SetTargetName(DateOpacity, DateLabel.Name);
+			Storyboard.SetTargetName(DateMargin, DateLabel.Name);
+
+			Storyboard.SetTargetName(DimmerOpacity, Dimmer.Name);
+
+			Storyboard.SetTargetProperty(ClockOpacity, new PropertyPath(OpacityProperty));
+			Storyboard.SetTargetProperty(ClockMargin, new PropertyPath(MarginProperty));
+			Storyboard.SetTargetProperty(DateOpacity, new PropertyPath(OpacityProperty));
+			Storyboard.SetTargetProperty(DateMargin, new PropertyPath(MarginProperty));
+
+			Storyboard.SetTargetProperty(DimmerOpacity, new PropertyPath(OpacityProperty));
 		}
 
 		public void datetime_tick(object sender, EventArgs e)
 		{
-			ClockLabel.Content = DateTime.Now.ToString("H:mm");
+			ClockLabel.Content = DateTime.Now.ToString("HH:mm");
 			DateLabel.Content = DateTime.Now.ToString("dddd dd MMMM", CultureInfo.CurrentCulture);
 		}
 
@@ -179,7 +229,15 @@ namespace WindowsLogon
 			dispatcherTimer.Tick += new EventHandler(datetime_tick);
 			dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
 			dispatcherTimer.Start();
+		}
 
+		private void Window_KeyDown(object sender, KeyEventArgs e)
+		{
+
+			//myStoryboard.Begin(ClockLabel);
+			myStoryboard.Begin(this);
+			//DateLabel.Visibility = Visibility.Hidden;
+			//ClockLabel.Visibility = Visibility.Hidden;
 		}
 	}
 }

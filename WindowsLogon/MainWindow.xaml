@@ -5,11 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WindowsLogon"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" ShowInTaskbar="False" ResizeMode="NoResize" WindowState="Maximized" WindowStyle="None" Loaded="Window_Loaded">
+        Title="MainWindow" Height="450" Width="800" ShowInTaskbar="False" ResizeMode="NoResize" WindowState="Maximized" WindowStyle="None" Loaded="Window_Loaded" KeyDown="Window_KeyDown">
     <Grid>
-        <Image x:Name="LockBackground" HorizontalAlignment="Center" Height="auto" VerticalAlignment="Center" Width="auto" Source="img101.png" Stretch="UniformToFill"/>
-        <Rectangle Height="auto" Stroke="Black" Width="auto" Fill="Black" Opacity="0.33"/>
-        <Label x:Name="ClockLabel" Content="20:59" HorizontalAlignment="Left" Margin="30,0,0,173" VerticalAlignment="Bottom" FontFamily="Segoe UI Light" FontSize="140" Background="#00000000" Foreground="White" Height="168"/>
+        <Image x:Name="LockBackground" HorizontalAlignment="Center" Height="auto" VerticalAlignment="Center" Width="auto" Source="img101.png" Stretch="UniformToFill" RenderTransformOrigin="0.5,0.5"/>
+        <Rectangle x:Name="Dimmer" Height="auto" Stroke="Black" Width="auto" Fill="Black" Opacity="0.23"/>
+        <Label
+            x:Name="ClockLabel" 
+            Content="20:59"
+            HorizontalAlignment="Left" 
+            Margin="30,0,0,173" 
+            VerticalAlignment="Bottom" 
+            FontFamily="Segoe UI Light" 
+            FontSize="140" 
+            Background="#00000000" 
+            Foreground="White" 
+            Height="168">
+        </Label>
         <Label x:Name="DateLabel" Content="torsdag den 13 februari" HorizontalAlignment="Left" Margin="30,0,0,96" VerticalAlignment="Bottom" FontSize="50" Background="#00000000" Foreground="White" Width="618"/>
 
     </Grid>
